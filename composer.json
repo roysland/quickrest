@@ -1,0 +1,13 @@
+{
+    "require": {
+        "altorouter/altorouter": "^2.0"
+    },
+    "scripts": {
+        "dev": "php -S 0.0.0.0:8000 -t ."
+    },
+    "autoload": {
+        "psr-4": {
+            "Pageup\\": "src"
+        }
+    }
+}
