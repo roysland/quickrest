@@ -1,7 +1,18 @@
 <?php
 namespace Pageup\Base;
-
+/**
+ * Headers
+ * 
+ * Simple manipulation and parser for request headers
+ */
 class Headers {
+    /**
+     * Headers::set()
+     * 
+     * @param string $name The header to set
+     * @param string $value The value of the header
+     * @return void
+     */
     public static function set ($name, $value) {
         /* $allowedHeaders = [
             'Content-Type',
@@ -38,7 +49,14 @@ class Headers {
         ]; */
         header($name .': '. $value);
     }
-
+    /**
+     * Headers::get
+     * 
+     * Get a specified header
+     * 
+     * @param string $name Get value of header
+     * @return string RequestHeader
+     */
     public static function get ($name) {
         return $_SERVER['HTTP_'.$name];
     }

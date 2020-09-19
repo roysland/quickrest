@@ -5,11 +5,10 @@ use Pageup\Base\Request;
 use Pageup\Base\Response;
 
 class HomeController extends Controller {
-    use \Pageup\Base\Database;
     public function index () {
         $name = Request::input('name');
-        Response::cache('static');
-        Response::json(['data' => $name]);
+        // Response::cache('static');
+        Response::cache('static')->json(['data' => $name]);
     }
 
     public function store () {

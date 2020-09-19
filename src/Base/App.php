@@ -1,6 +1,7 @@
 <?php
 
 namespace Pageup\Base;
+use \Pageup\Base\AltoRouter;
 
 class App {
     public $router;
@@ -9,36 +10,64 @@ class App {
     protected static $_instance;
 
     public function __construct($options = ['mode' => 'dev']) {
-        $this->router = new \AltoRouter();
+        $this->router = new Router();
         $this->router->setBasePath('/personal/pagesiler');
         $this->options = $options;
-        $this->middleware = [
-            '/admin' => 'Auth'
-        ];
+        $this->middleware = [];
         
         self::$_instance = $this;
     }
-
+    /**
+     * getInstance
+     * 
+     * Return an instance of the class
+     */
     public static function getInstance() {
         if (self::$_instance === null) {
             self::$_instance = new self();
         }
         return self::$_instance;
     }
-
-    public function get($path, $action, $name = 'null') {
-        $this->router->map('GET', $path, $action, $name);
+    /**
+     * Get
+     * 
+     * Define a GET route
+     * @param string $path Path for route
+     * @param string $action class@action
+     * @param string $name Name of route
+     * @param string $middleware The middleware to use
+     */
+    public function get($path, $action, $name = 'null', $middleware = null) {
+        $this->router->map('GET', $path, $action, $name, $middleware);
         return $this;
     }
-
-    public function post($path, $action, $name = 'null') {
-        return $this->router->map('POST', $path, $action, $name);
+    /**
+     * Post
+     * 
+     * Define a POST route
+     * @param string $path Path for route
+     * @param string $action class@action
+     * @param string $name Name of route
+     * @param string $middleware The middleware to use
+     */
+    public function post($path, $action, $name = 'null', $middleware = null) {
+        return $this->router->map('POST', $path, $action, $name, $middleware);
     }
-
-    public function hasMiddleware ($path) {
-        if (array_key_exists($path, $this->middleware)) {
+    /**
+     * hasMiddleware
+     * 
+     * Checks the current route and runs middleware if any
+     * 
+     * @param array $currentPath The matched route
+     */
+    public function hasMiddleware ($currentPath) {
+        /* if (array_key_exists($path, $this->middleware)) {
             $className = 'Pageup\Middleware\\'. $this->middleware[$path];
             $mw = new $className();
+        } */
+        if ($currentPath['middleware']) {
+            $className = 'Pageup\Middleware\\'. $currentPath['middleware'];
+            return new $className($currentPath);
         }
     }
 
@@ -48,7 +77,7 @@ class App {
         if (is_array($match)) {
             try {
                 // Run middleware
-                $this->hasMiddleware($match['path']);
+                $this->hasMiddleware($match);
                 list($controller, $action) = explode('@', $match['target']);
                 $fullClass = 'Pageup\Controllers\\'. $controller;
                 $className = new $fullClass;
